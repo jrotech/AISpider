@@ -1,4 +1,3 @@
-from typing import Any
 import scrapy
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
@@ -8,7 +7,8 @@ from scrapy.crawler import CrawlerProcess
 
 class SeleniumSpider(scrapy.Spider):
     name = 'selenium_spider'
-    start_urls = ["https://www.cnbc.com/economy/"]
+    
+    start_urls = [f"https://www.cnbc.com/economy/"]
     
     custom_settings = {
         'DEFAULT_REQUEST_HEADERS': {
@@ -42,8 +42,9 @@ class SeleniumSpider(scrapy.Spider):
         # Debugging: Print the number of links found
         print(f"Found {len(article_links)} links")
 
-        for link in article_links:
-            print(link)
+        with open('article_links.txt', 'w') as f:
+             for link in article_links:
+                 f.write(f"{link}\n")
 
 # Run the spider
 process = CrawlerProcess()
