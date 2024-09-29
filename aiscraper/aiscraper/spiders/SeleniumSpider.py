@@ -8,7 +8,9 @@ from scrapy.crawler import CrawlerProcess
 class SeleniumSpider(scrapy.Spider):
     name = 'selenium_spider'
     
-    start_urls = [f"https://www.cnbc.com/economy/"]
+    start_urls = [f"https://www.cnbc.com/economy/","https://www.cnbc.com/world-economy/","https://www.cnbc.com/central-banks/","https://www.cnbc.com/finance/", "https://www.cnbc.com/banks/",
+                  "https://www.cnbc.com/investing/", "https://www.cnbc.com/wealth/","https://www.cnbc.com/real-estate/","https://www.cnbc.com/financial-advisors/",
+                  "https://www.cnbc.com/trader-talk/","https://www.cnbc.com/earnings/","https://www.cnbc.com/rising-risks/","https://www.cnbc.com/fintech/"]
     
     custom_settings = {
         'DEFAULT_REQUEST_HEADERS': {
