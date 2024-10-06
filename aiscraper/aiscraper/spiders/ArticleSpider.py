@@ -19,22 +19,28 @@ class ArticleSpider(scrapy.Spider):
         },
         'LOG_LEVEL': 'WARNING'  # Set Scrapy logging level to WARNING
     }
+    global current_dir
+    current_dir = os.path.dirname(os.path.abspath(__file__))
     
     def __init__(self, *args, **kwargs):
         super(ArticleSpider, self).__init__(*args, **kwargs)
 
         # Prepare the selenium driver 
+        gecko_driver_path = os.path.join(current_dir, 'geckodriver.exe')
+        print(gecko_driver_path)
         options = Options()
         options.add_argument('-headless')
         options.set_preference("log.level", "fatal")  # Set selenium log level to suppress logs
-        service = Service(executable_path='../geckodriver.exe', log_path=os.devnull) # Set geckodriver log level to suppress logs
+        service = Service(executable_path=gecko_driver_path, log_path=os.devnull) # Set geckodriver log level to suppress logs
         self.driver = webdriver.Firefox(service=service, options=options)
         #Initialize the json array
-        with open('../resources/articles_content.json', 'w') as f:
+        json_file = os.path.join(current_dir, '../resources/articles_content.json')
+        with open(json_file, 'w') as f:
             json.dump([], f)
     
     def start_requests(self):
-        with open('../resources/article_links.txt','r') as f:
+        links_file = os.path.join(current_dir, '../resources/article_links.txt')
+        with open(links_file,'r') as f:
             urls=f.readlines()
         for url in urls:
             yield scrapy.Request(url=url.strip(),callback=self.parse)
@@ -59,7 +65,6 @@ class ArticleSpider(scrapy.Spider):
             article_text = selector.css("span.xyz-data::text").getall()
         else:
             article_text = selector.xpath("//div[@class='group']//p//text()").getall()
-            article_text = " ".join(article_text)
 
         article_text = "".join(article_text)
         
@@ -74,7 +79,8 @@ class ArticleSpider(scrapy.Spider):
         }
 
         try:
-            with open('../resources/articles_content.json', 'r') as f:
+            json_file = os.path.join(current_dir, '../resources/articles_content.json')
+            with open(json_file, 'r') as f:
                 articles = json.load(f)
         except FileNotFoundError:
             articles = []
@@ -82,7 +88,8 @@ class ArticleSpider(scrapy.Spider):
         articles.append(article_data)
 
         # Add to the json array
-        with open('../resources/articles_content.json', 'w') as f:
+        json_file = os.path.join(current_dir, '../resources/articles_content.json')
+        with open(json_file, 'w') as f:
             json.dump(articles, f,  ensure_ascii=False, indent=4)
 
     def closed(self, reason):
